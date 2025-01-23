@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Cotizador de envíos</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@800&display=swap');
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 800px;
+            text-align: center;
+            position: relative;
+        }
+        h1 {
+            color: #13252B;
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-top: 10px;
+            color: #173C4C;
+            font-weight: bold;
+            text-align: left;
+        }
+        input, select, button {
+            width: 100%;
+            padding: 15px;
+            margin-top: 5px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-family: 'Montserrat', sans-serif;
+        }
+        input, select {
+            color: #173C4C;
+        }
+        button {
+            background-color: #00B022;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #038919;
+        }
+        #resultado {
+            margin-top: 20px;
+            font-size: 1.2em;
+            color: #173C4C;
+            text-align: left;
+        }
+        .spinner {
+            display: none;
+            margin: 20px auto;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #00B022;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .hidden {
+            display: none;
+        }
+        img {
+            width: 200px;
+            margin-bottom: 20px;
+        }
+        .form-section {
+            margin-bottom: 30px;
+        }
+        .form-section h2 {
+            text-align: left;
+            color: #13252B;
+            margin-bottom: 10px;
+        }
+        .aligned-input {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <img src="Logo color horizontal.png" alt="Logo">
+        <h1>Cotizador de envíos</h1>
+        <div class="form-section">
+            <label for="monedaOrigen">Moneda de Origen:</label>
+            <select id="monedaOrigen">
+                <option value="COP">Peso Colombiano (COP)</option>
+                <option value="BRL">Real Brasileño (BRL)</option>
+                <option value="MXN">Peso Mexicano (MXN)</option>
+                <option value="CLP">Peso Chileno (CLP)</option>
+                <option value="PEN">Sol Peruano (PEN)</option>
+                <option value="PYG">Guaraní Paraguayo (PYG)</option>
+                <option value="UYU">Peso Uruguayo (UYU)</option>
+                <option value="USD">Dólar Estadounidense (USD)</option>
+                <option value="EUR">Euro (EUR)</option>
+                <option value="HKD">Dólar de Hong Kong (HKD)</option>
+                <option value="CNY">Yuan Chino (CNY)</option>
+            </select>
+            <label for="monedaDestino">Moneda de Destino:</label>
+            <select id="monedaDestino">
+                <option value="COP">Peso Colombiano (COP)</option>
+                <option value="BRL">Real Brasileño (BRL)</option>
+                <option value="MXN">Peso Mexicano (MXN)</option>
+                <option value="CLP">Peso Chileno (CLP)</option>
+                <option value="PEN">Sol Peruano (PEN)</option>
+                <option value="PYG">Guaraní Paraguayo (PYG)</option>
+                <option value="UYU">Peso Uruguayo (UYU)</option>
+                <option value="USD">Dólar Estadounidense (USD)</option>
+                <option value="EUR">Euro (EUR)</option>
+                <option value="HKD">Dólar de Hong Kong (HKD)</option>
+                <option value="CNY">Yuan Chino (CNY)</option>
+            </select>
+            <label for="cantidad">Cantidad:</label>
+            <input type="number" id="cantidad" placeholder="Ingrese la cantidad">
+            <label for="comision">Comisión (%):</label>
+            <input type="number" id="comision" placeholder="Ingrese la comisión en %">
+            <button onclick="calcularEnvio()">Cotizar</button>
+            <div class="spinner" id="spinner"></div>
+            <div id="resultado"></div>
+        </div>
+
+        <div id="datosEnvio" class="hidden form-section">
+            <h2>Datos de Envio</h2>
+            <div class="aligned-input">
+                <label for="solicitante">Solicitante:</label>
+                <input type="text" id="solicitante" placeholder="Nombre del solicitante">
+            </div>
+            <div class="aligned-input">
+                <label for="beneficiario">Beneficiario:</label>
+                <input type="text" id="beneficiario" placeholder="Nombre del beneficiario">
+            </div>
+            <div class="aligned-input">
+                <label for="tipoID">Tipo de ID:</label>
+                <input type="text" id="tipoID" placeholder="Tipo de identificación (CC, Pasaporte, etc.)">
+            </div>
+            <div class="aligned-input">
+                <label for="numeroID">Número de ID:</label>
+                <input type="text" id="numeroID" placeholder="Número de identificación">
+            </div>
+            <div class="aligned-input">
+                <label for="tipoCuenta">Tipo de cuenta:</label>
+                <input type="text" id="tipoCuenta" placeholder="Ahorros, Corriente, etc.">
+            </div>
+            <div class="aligned-input">
+                <label for="numeroCuenta">Número de cuenta:</label>
+                <input type="text" id="numeroCuenta" placeholder="Número de cuenta bancaria">
+            </div>
+            <button onclick="confirmarCotizacion()">Confirmar Cotización</button>
+        </div>
+    </div>
+<script>
+    const sheetDBURL = 'https://sheetdb.io/api/v1/40v2uh03f9082';
+
+
+    async function calcularEnvio() {
+        const cantidad = parseFloat(document.getElementById('cantidad').value);
+        const monedaOrigen = document.getElementById('monedaOrigen').value;
+        const monedaDestino = document.getElementById('monedaDestino').value;
+        const comision = parseFloat(document.getElementById('comision').value) || 0;
+
+        if (!cantidad || !monedaOrigen || !monedaDestino) {
+            alert('Por favor, complete todos los campos.');
+            return;
+        }
+
+        const spinner = document.getElementById('spinner');
+        spinner.style.display = 'block';
+
+        try {
+            const apiID = "colocagroupsas266471220";
+            const apiKey = "p860ankk1m5q0e3q4l929blrr1";
+            const url = `https://xecdapi.xe.com/v1/convert_from.json/?from=${monedaOrigen}&to=${monedaDestino}&amount=${cantidad}`;
+
+            const response = await fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Basic ' + btoa(`${apiID}:${apiKey}`)
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error(`Error del servidor: ${response.statusText}`);
+            }
+
+            const data = await response.json();
+
+            if (data && data.to && data.to[0] && data.to[0].mid) {
+                const tasaCambio = parseFloat(data.to[0].mid) / cantidad;
+
+                const montoConvertido = cantidad * tasaCambio;
+                const montoComision = montoConvertido * (comision / 100);
+                const montoFinal = montoConvertido - montoComision;
+
+                document.getElementById('resultado').innerHTML = `
+                    <p><strong>Tasa de Cambio:</strong> 1 ${monedaOrigen} = ${formatearNumeroBR(tasaCambio)} ${monedaDestino}</p>
+                    <p><strong>Monto Original:</strong> ${formatearNumeroBR(cantidad)} ${monedaOrigen}</p>
+                    <p><strong>Monto Convertido:</strong> ${formatearNumeroBR(montoConvertido)} ${monedaDestino}</p>
+                    <p><strong>Comisión (${comision}%):</strong> -${formatearNumeroBR(montoComision)} ${monedaDestino}</p>
+                    <p><strong>Monto Final:</strong> ${formatearNumeroBR(montoFinal)} ${monedaDestino}</p>
+                `;
+                document.getElementById('datosEnvio').classList.remove('hidden');
+            } else {
+                alert('Error al procesar los datos recibidos.');
+            }
+        } catch (error) {
+            console.error('Error al calcular el envío:', error);
+            alert('Hubo un error al procesar la solicitud. Por favor, intente de nuevo.');
+        } finally {
+            spinner.style.display = 'none';
+        }
+    }
+
+    async function confirmarCotizacion() {
+        const solicitante = document.getElementById('solicitante').value.trim();
+        const beneficiario = document.getElementById('beneficiario').value.trim();
+        const tipoID = document.getElementById('tipoID').value.trim();
+        const numeroID = document.getElementById('numeroID').value.trim();
+        const tipoCuenta = document.getElementById('tipoCuenta').value.trim();
+        const numeroCuenta = document.getElementById('numeroCuenta').value.trim();
+
+        const resultadoTexto = document.getElementById('resultado').innerText;
+
+        const cantidad = limpiarFormatoBR(extraerValor(resultadoTexto, "Monto Original"));
+        const montoFinal = limpiarFormatoBR(extraerValor(resultadoTexto, "Monto Final"));
+        const comisionPorcentaje = parseFloat(document.getElementById('comision').value);
+
+        const monedaOrigen = document.getElementById('monedaOrigen').value;
+        const monedaDestino = document.getElementById('monedaDestino').value;
+
+        const fecha = new Date().toLocaleDateString('pt-BR');
+        const hora = new Date().toLocaleTimeString('en-US', { hour12: false });
+
+        if (!solicitante || !beneficiario || !tipoID || !numeroID || !tipoCuenta || !numeroCuenta || isNaN(cantidad) || isNaN(montoFinal) || isNaN(comisionPorcentaje)) {
+            alert('Por favor, complete todos los campos antes de confirmar la cotización.');
+            return;
+        }
+
+        // Objeto de datos ajustado para que coincida con las columnas
+        const data = {
+            "orderNumber": await obtenerUltimoNumeroOrden(), // Generar el número de orden.
+            "fecha": fecha, // Fecha en formato dd/MM/yyyy.
+            "Hora": hora, // Hora en formato HH:mm:ss.
+            "Solicitante": solicitante,
+            "Beneficiario": beneficiario,
+            "Tipo de ID": tipoID,
+            "Número de ID": numeroID,
+            "Tipo de cuenta": tipoCuenta,
+            "Número de cuenta": numeroCuenta,
+            "cantidad": cantidad.toLocaleString('pt-BR'),
+            "monedaOrigen": monedaOrigen,
+            "monedaDestino": monedaDestino,
+            "Valor cotizado": montoFinal.toLocaleString('pt-BR'),
+            "Comision": comisionPorcentaje.toLocaleString('pt-BR'),
+            "Verificacion": "" // Marca como verificado automáticamente.
+        };
+
+        try {
+            const response = await fetch(sheetDBURL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+
+            if (response.ok) {
+                alert('Cotización confirmada y enviada correctamente.');
+                resetForm();
+            } else {
+                throw new Error(`Error al enviar la cotización: ${response.statusText}`);
+            }
+        } catch (error) {
+            console.error('Error al confirmar la cotización:', error);
+            alert('Hubo un error al confirmar la cotización.');
+        }
+    }
+
+    async function obtenerUltimoNumeroOrden() {
+        try {
+            const response = await fetch(sheetDBURL);
+            const data = await response.json();
+            return data.length + 1;
+        } catch (error) {
+            console.error('Error al obtener el último número de orden:', error);
+            return 1;
+        }
+    }
+
+    function extraerValor(texto, clave) {
+        const regex = new RegExp(`${clave}:\\s*([\\d.,]+)`);
+        const match = texto.match(regex);
+        return match ? match[1] : null;
+    }
+
+    function limpiarFormatoBR(valor) {
+        if (!valor) return NaN;
+        return parseFloat(valor.replace(/\./g, '').replace(',', '.'));
+    }
+
+    function formatearNumeroBR(numero) {
+        if (Number.isInteger(numero)) {
+            return numero.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+        }
+        return numero.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function resetForm() {
+        document.getElementById('monedaOrigen').value = "COP";
+        document.getElementById('monedaDestino').value = "COP";
+        document.getElementById('cantidad').value = "";
+        document.getElementById('comision').value = "";
+        document.getElementById('resultado').innerHTML = "";
+        document.getElementById('datosEnvio').classList.add('hidden');
+        document.querySelectorAll('#datosEnvio input').forEach(input => input.value = "");
+    }
+
+
+</script>
+
+
+</body>
+</html>
